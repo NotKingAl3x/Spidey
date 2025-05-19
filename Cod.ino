@@ -2,7 +2,19 @@
 #include <WiFi.h>
 #include <BlynkSimpleEsp32.h>
 #include <DHT.h>
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
 
+Adafruit_PWMServoDriver rightServos = Adafruit_PWMServoDriver(0x40);
+Adafruit_PWMServoDriver leftServos = Adafruit_PWMServoDriver(0x60);
+
+#define SERVOMIN 102  // Minimum pulse length count (approx 500µs)
+#define SERVOMAX 512  // Maximum pulse length count (approx 2500µs)
+
+// Converts angle (0-180) to PWM pulse count
+uint16_t angleToPulse(int angle) {
+  return map(angle, 0, 180, SERVOMIN, SERVOMAX);
+}
 
 char auth[] = "e7OzjMzulxmwu4DOAZxRhZ9gOdB1ivR2";
 char ssid[] = "Alex's Pixel 9";
@@ -66,6 +78,52 @@ void setup() {
   Blynk.begin(auth, ssid, pass, "blynk.cloud", 80);
 
   dht.begin();
+
+  rightServos.begin();
+  rightServos.setPWMFreq(50);  // Analog servos run at ~50 Hz
+
+  leftServos.begin();
+  leftServos.setPWMFreq(50);  // Analog servos run at ~50 Hz
+
+  resetPosition();
+  
+  delay(1000);
+}
+
+bool forward;
+bool backward;
+bool left;
+bool right;
+bool turnLeft;
+bool turnRight;
+int height;
+
+BLYNK_WRITE(V5) {
+  left = param.asInt();
+}
+
+BLYNK_WRITE(V6) {
+  right = param.asInt();
+}
+
+BLYNK_WRITE(V7) {
+  forward = param.asInt();
+}
+
+BLYNK_WRITE(V8) {
+  backward = param.asInt();
+}
+
+BLYNK_WRITE(V9) {
+  turnLeft = param.asInt();
+}
+
+BLYNK_WRITE(V10) {
+  turnRight = param.asInt();
+}
+
+BLYNK_WRITE(V11) {
+  height = param.asInt();
 }
 
 void loop() {
@@ -75,5 +133,70 @@ void loop() {
   readMq135();
   readMq2();
   readMq5();
+  checkForMovement();
   delay(100);
+}
+
+void checkForMovement(){
+  if(forward) moveForward();
+  if(backward) moveBackward();
+  if(left) moveLeft();
+  if(right) moveRight();
+  if(turnLeft) turnRobotLeft();
+  if(turnRight) turnRobotRight();
+  Serial.println(height);
+  if(!forward && !backward && !left && !right && !turnLeft && !turnRight) resetPosition();
+
+}
+
+void moveForward(){
+  Serial.println("Forward");
+}
+
+void moveBackward(){
+  Serial.println("Backward");
+}
+
+void moveLeft(){
+  Serial.println("Left");
+}
+
+void moveRight(){
+  Serial.println("Right");
+}
+
+void turnRobotLeft(){
+  Serial.println("TurnLeft");
+}
+
+void turnRobotRight(){
+  Serial.println("TurnRight");
+}
+
+void resetPosition(){
+  moveLeg(leftServos, 1, 90 , 90 , 90);
+  moveLeg(leftServos, 2, 90 , 90 , 90);
+  moveLeg(leftServos, 3, 90 , 90 , 90);
+
+  moveLeg(rightServos, 1, 90 , 90 , 90);
+  moveLeg(rightServos, 2, 90 , 90 , 90);
+  moveLeg(rightServos, 3, 90 , 90 , 90);
+}
+
+
+void moveLeg(Adafruit_PWMServoDriver& servos, int leg, int coxaDegrees, int femurDegrees, int tibiaDegrees){
+  int coxa = 0 + (4*(leg-1));
+  int femur = 1 + (4*(leg-1));
+  int tibia = 2 + (4*(leg-1));
+
+  int legHeight;
+  if(&servos == &leftServos) legHeight = -(height);
+  else legHeight = height;
+
+  servos.setPWM(coxa, 0, angleToPulse(coxaDegrees));
+  delay(20);
+  servos.setPWM(femur, 0, angleToPulse(femurDegrees + legHeight));
+  delay(20);
+  servos.setPWM(tibia, 0, angleToPulse(tibiaDegrees + legHeight));
+  delay(20);
 }
