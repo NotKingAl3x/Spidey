@@ -22,6 +22,14 @@ char pass[] = "nostradamus";
 
 BlynkTimer timer;
 
+int offset[6][3] = {
+  { 1, -4, 8 },
+  { 13, -2, 0 },
+  { 7, -10, -6 },
+  { -5, -3, -3 },
+  { 5, 5, 1 },
+  { -8, -1, -1 }
+};
 
 #define DHTPIN 32  //Connect Out pin to D2 in NODE MCU
 #define DHTTYPE DHT11
@@ -86,8 +94,8 @@ void setup() {
   leftServos.setPWMFreq(50);  // Analog servos run at ~50 Hz
 
   resetPosition();
-  
-  delay(1000);
+
+  smartDelay(1000);
 }
 
 bool forward;
@@ -96,7 +104,7 @@ bool left;
 bool right;
 bool turnLeft;
 bool turnRight;
-int height;
+int height = 0;
 
 BLYNK_WRITE(V5) {
   left = param.asInt();
@@ -134,69 +142,228 @@ void loop() {
   readMq2();
   readMq5();
   checkForMovement();
-  delay(100);
+  smartDelay(100);
 }
 
-void checkForMovement(){
-  if(forward) moveForward();
-  if(backward) moveBackward();
-  if(left) moveLeft();
-  if(right) moveRight();
-  if(turnLeft) turnRobotLeft();
-  if(turnRight) turnRobotRight();
+void checkForMovement() {
+  if (forward) moveForward();
+  if (backward) moveBackward();
+  if (left) moveLeft();
+  if (right) moveRight();
+  if (turnLeft) turnRobotLeft();
+  if (turnRight) turnRobotRight();
   Serial.println(height);
-  if(!forward && !backward && !left && !right && !turnLeft && !turnRight) resetPosition();
-
+  if (!forward && !backward && !left && !right && !turnLeft && !turnRight) resetPosition();
 }
 
-void moveForward(){
+void moveForward() {
   Serial.println("Forward");
+
+  bool groupALifted = false;
+
+  while (forward) {
+
+    if (!groupALifted) {
+      //Lift Group A
+      moveLeg(leftServos, 1, 45, 120, 50);
+      smartDelay(50);
+      moveLeg(rightServos, 2, 90, 60, 130);
+      smartDelay(50);
+      moveLeg(leftServos, 3, 135, 120, 50);
+      smartDelay(200);
+    }
+
+    //Check If The Button Is Still Pressed
+    if (!forward) {
+      resetPosition();
+      return;
+    }
+
+    //Move Group A Forward
+    moveLeg(leftServos, 1, 25, 120, 50);
+    smartDelay(50);
+    moveLeg(rightServos, 2, 110, 60, 130);
+    smartDelay(50);
+    moveLeg(leftServos, 3, 110, 120, 50);
+    smartDelay(200);
+
+    //Check If The Button Is Still Pressed
+    if (!forward) {
+      resetPosition();
+      return;
+    }
+
+    //Put Down Group A
+    moveLeg(leftServos, 1, 25, 90, 85);
+    smartDelay(50);
+    moveLeg(rightServos, 2, 110, 90, 95);
+    smartDelay(50);
+    moveLeg(leftServos, 3, 110, 90, 85);
+    smartDelay(300);
+
+    //Check If The Button Is Still Pressed
+    if (!forward) {
+      resetPosition();
+      return;
+    }
+
+    //Lift Group B
+    moveLeg(rightServos, 1, 135, 60, 130);
+    smartDelay(50);
+    moveLeg(leftServos, 2, 90, 120, 50);
+    smartDelay(50);
+    moveLeg(rightServos, 3, 45, 60, 130);
+    smartDelay(500);
+
+    //Check If The Button Is Still Pressed
+    if (!forward) {
+      resetPosition();
+      return;
+    }
+
+    //Move Group A Back(Moving the robot forward)
+    moveLeg(leftServos, 1, 45, 90, 85);
+    smartDelay(50);
+    moveLeg(rightServos, 2, 90, 90, 95);
+    smartDelay(50);
+    moveLeg(leftServos, 3, 135, 90, 85);
+    smartDelay(500);
+
+    //Check If The Button Is Still Pressed
+    if (!forward) {
+      resetPosition();
+      return;
+    }
+
+    //Move Group B Forward
+    moveLeg(rightServos, 1, 155, 60, 130);
+    smartDelay(50);
+    moveLeg(leftServos, 2, 70, 120, 50);
+    smartDelay(50);
+    moveLeg(rightServos, 3, 70, 60, 130);
+    smartDelay(200);
+
+    //Check If The Button Is Still Pressed
+    if (!forward) {
+      resetPosition();
+      return;
+    }
+
+    //Put Down Group B
+    moveLeg(rightServos, 1, 155, 90, 95);
+    smartDelay(50);
+    moveLeg(leftServos, 2, 70, 90, 85);
+    smartDelay(50);
+    moveLeg(rightServos, 3, 70, 90, 95);
+    smartDelay(300);
+
+    //Check If The Button Is Still Pressed
+    if (!forward) {
+      resetPosition();
+      return;
+    }
+
+    //Lift Group A
+    moveLeg(leftServos, 1, 45, 120, 50);
+    smartDelay(50);
+    moveLeg(rightServos, 2, 90, 60, 130);
+    smartDelay(50);
+    moveLeg(leftServos, 3, 135, 120, 50);
+    smartDelay(500);
+    groupALifted = true;
+
+
+    //Check If The Button Is Still Pressed
+    if (!forward) {
+      resetPosition();
+      return;
+    }
+
+    //Move Group B Back(Moving the robot forward)
+    moveLeg(rightServos, 1, 135, 90, 95);
+    smartDelay(50);
+    moveLeg(leftServos, 2, 90, 90, 85);
+    smartDelay(50);
+    moveLeg(rightServos, 3, 45, 90, 95);
+    smartDelay(200);
+  }
 }
 
-void moveBackward(){
+
+void moveBackward() {
   Serial.println("Backward");
+  while (backward) {
+
+
+    moveLeg(rightServos, 1, 90, 30, 95);
+    smartDelay(100);
+    if (!backward) {
+      resetPosition();
+      return;
+    }
+    moveLeg(rightServos, 3, 90, 30, 95);
+    smartDelay(100);
+  }
 }
 
-void moveLeft(){
+void moveLeft() {
   Serial.println("Left");
 }
 
-void moveRight(){
+void moveRight() {
   Serial.println("Right");
 }
 
-void turnRobotLeft(){
+void turnRobotLeft() {
   Serial.println("TurnLeft");
 }
 
-void turnRobotRight(){
+void turnRobotRight() {
   Serial.println("TurnRight");
 }
 
-void resetPosition(){
-  moveLeg(leftServos, 1, 90 , 90 , 90);
-  moveLeg(leftServos, 2, 90 , 90 , 90);
-  moveLeg(leftServos, 3, 90 , 90 , 90);
+void resetPosition() {
+  moveLeg(leftServos, 1, 45, 90, 85);
+  moveLeg(rightServos, 2, 90, 90, 95);
+  moveLeg(leftServos, 3, 135, 90, 85);
 
-  moveLeg(rightServos, 1, 90 , 90 , 90);
-  moveLeg(rightServos, 2, 90 , 90 , 90);
-  moveLeg(rightServos, 3, 90 , 90 , 90);
+  moveLeg(rightServos, 1, 135, 90, 95);
+  moveLeg(leftServos, 2, 90, 90, 85);
+  moveLeg(rightServos, 3, 45, 90, 95);
 }
 
 
-void moveLeg(Adafruit_PWMServoDriver& servos, int leg, int coxaDegrees, int femurDegrees, int tibiaDegrees){
-  int coxa = 0 + (4*(leg-1));
-  int femur = 1 + (4*(leg-1));
-  int tibia = 2 + (4*(leg-1));
+void moveLeg(Adafruit_PWMServoDriver& servos, int leg, int coxaDegrees, int femurDegrees, int tibiaDegrees) {
+  int coxa = 0 + (4 * (leg - 1));
+  int femur = 1 + (4 * (leg - 1));
+  int tibia = 2 + (4 * (leg - 1));
+
+  if (&servos == &leftServos) {
+    coxaDegrees += offset[leg - 1][0];
+    femurDegrees += offset[leg - 1][1];
+    tibiaDegrees += offset[leg - 1][2];
+  } else {
+    coxaDegrees += offset[leg + 2][0];
+    femurDegrees += offset[leg + 2][1];
+    tibiaDegrees += offset[leg + 2][2];
+  }
 
   int legHeight;
-  if(&servos == &leftServos) legHeight = -(height);
+  if (&servos == &leftServos) legHeight = -(height);
   else legHeight = height;
 
   servos.setPWM(coxa, 0, angleToPulse(coxaDegrees));
-  delay(20);
+  smartDelay(10);
   servos.setPWM(femur, 0, angleToPulse(femurDegrees + legHeight));
-  delay(20);
+  smartDelay(10);
   servos.setPWM(tibia, 0, angleToPulse(tibiaDegrees + legHeight));
-  delay(20);
+  smartDelay(10);
+}
+
+void smartDelay(int delayParam) {
+  for (int i = 0; i < delayParam / 10; i++) {
+    delay(10);
+    Blynk.run();
+    timer.run();
+  }
 }
