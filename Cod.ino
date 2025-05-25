@@ -31,6 +31,15 @@ int offset[6][3] = {
   { -8, -1, -1 }
 };
 
+int currentDegrees[6][3]{
+  { 0, 0, 0 },
+  { 0, 0, 0 },
+  { 0, 0, 0 },
+  { 0, 0, 0 },
+  { 0, 0, 0 },
+  { 0, 0, 0 }
+};
+
 #define DHTPIN 32  //Connect Out pin to D2 in NODE MCU
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
@@ -61,9 +70,11 @@ void readMq135() {
 }
 
 int Mq2SensorValue;
-const int smokeThreshold = 400;
+const int smokeThreshold = 1000;
 void readMq2() {
-  Mq2SensorValue - analogRead(33);
+  Mq2SensorValue = analogRead(33);
+  Serial.print("Smoke: ");
+  Serial.println(Mq2SensorValue);
   if (Mq2SensorValue < smokeThreshold)
     Blynk.virtualWrite(V3, "Fum: Nu");
   else
@@ -71,9 +82,11 @@ void readMq2() {
 }
 
 int Mq5SensorValue;
-const int gasThreshold = 400;
+const int gasThreshold = 1000;
 void readMq5() {
-  Mq5SensorValue - analogRead(34);
+  Mq5SensorValue = analogRead(34);
+  Serial.print("Gas: ");
+  Serial.println(Mq5SensorValue);
   if (Mq2SensorValue < gasThreshold)
     Blynk.virtualWrite(V4, "Gaz: Nu");
   else
@@ -165,12 +178,10 @@ void moveForward() {
 
     if (!groupALifted) {
       //Lift Group A
-      moveLeg(leftServos, 1, 45, 120, 50);
-      smartDelay(50);
-      moveLeg(rightServos, 2, 90, 60, 130);
-      smartDelay(50);
-      moveLeg(leftServos, 3, 135, 120, 50);
-      smartDelay(200);
+      smoothLifting(leftServos, 1, 35);
+      smoothLifting(rightServos, 2, -35);
+      smoothLifting(leftServos, 3, 35);
+      smartDelay(300);
     }
 
     //Check If The Button Is Still Pressed
@@ -180,12 +191,10 @@ void moveForward() {
     }
 
     //Move Group A Forward
-    moveLeg(leftServos, 1, 25, 120, 50);
-    smartDelay(50);
-    moveLeg(rightServos, 2, 110, 60, 130);
-    smartDelay(50);
-    moveLeg(leftServos, 3, 110, 120, 50);
-    smartDelay(200);
+    moveLeg(leftServos, 1, -20, 0, 0);
+    moveLeg(rightServos, 2, 20, 0, 0);
+    moveLeg(leftServos, 3, -20, 0, 0);
+    smartDelay(300);
 
     //Check If The Button Is Still Pressed
     if (!forward) {
@@ -194,11 +203,9 @@ void moveForward() {
     }
 
     //Put Down Group A
-    moveLeg(leftServos, 1, 25, 90, 85);
-    smartDelay(50);
-    moveLeg(rightServos, 2, 110, 90, 95);
-    smartDelay(50);
-    moveLeg(leftServos, 3, 110, 90, 85);
+    smoothLifting(leftServos, 1, -35);
+    smoothLifting(rightServos, 2, 35);
+    smoothLifting(leftServos, 3, -35);
     smartDelay(300);
 
     //Check If The Button Is Still Pressed
@@ -208,11 +215,9 @@ void moveForward() {
     }
 
     //Lift Group B
-    moveLeg(rightServos, 1, 135, 60, 130);
-    smartDelay(50);
-    moveLeg(leftServos, 2, 90, 120, 50);
-    smartDelay(50);
-    moveLeg(rightServos, 3, 45, 60, 130);
+    smoothLifting(rightServos, 1, -35);
+    smoothLifting(leftServos, 2, 35);
+    smoothLifting(rightServos, 3, -35);
     smartDelay(500);
 
     //Check If The Button Is Still Pressed
@@ -222,11 +227,9 @@ void moveForward() {
     }
 
     //Move Group A Back(Moving the robot forward)
-    moveLeg(leftServos, 1, 45, 90, 85);
-    smartDelay(50);
-    moveLeg(rightServos, 2, 90, 90, 95);
-    smartDelay(50);
-    moveLeg(leftServos, 3, 135, 90, 85);
+    moveLeg(leftServos, 1, 20, 0, 0);
+    moveLeg(rightServos, 2, -20, 0, 0);
+    moveLeg(leftServos, 3, 20, 0, 0);
     smartDelay(500);
 
     //Check If The Button Is Still Pressed
@@ -236,12 +239,10 @@ void moveForward() {
     }
 
     //Move Group B Forward
-    moveLeg(rightServos, 1, 155, 60, 130);
-    smartDelay(50);
-    moveLeg(leftServos, 2, 70, 120, 50);
-    smartDelay(50);
-    moveLeg(rightServos, 3, 70, 60, 130);
-    smartDelay(200);
+    moveLeg(rightServos, 1, 20, 0, 0);
+    moveLeg(leftServos, 2, -20, 0, 0);
+    moveLeg(rightServos, 3, 20, 0, 0);
+    smartDelay(300);
 
     //Check If The Button Is Still Pressed
     if (!forward) {
@@ -250,11 +251,9 @@ void moveForward() {
     }
 
     //Put Down Group B
-    moveLeg(rightServos, 1, 155, 90, 95);
-    smartDelay(50);
-    moveLeg(leftServos, 2, 70, 90, 85);
-    smartDelay(50);
-    moveLeg(rightServos, 3, 70, 90, 95);
+    smoothLifting(rightServos, 1, 35);
+    smoothLifting(leftServos, 2, -35);
+    smoothLifting(rightServos, 3, 35);
     smartDelay(300);
 
     //Check If The Button Is Still Pressed
@@ -264,11 +263,9 @@ void moveForward() {
     }
 
     //Lift Group A
-    moveLeg(leftServos, 1, 45, 120, 50);
-    smartDelay(50);
-    moveLeg(rightServos, 2, 90, 60, 130);
-    smartDelay(50);
-    moveLeg(leftServos, 3, 135, 120, 50);
+    smoothLifting(leftServos, 1, 35);
+    smoothLifting(rightServos, 2, -35);
+    smoothLifting(leftServos, 3, 35);
     smartDelay(500);
     groupALifted = true;
 
@@ -280,12 +277,10 @@ void moveForward() {
     }
 
     //Move Group B Back(Moving the robot forward)
-    moveLeg(rightServos, 1, 135, 90, 95);
-    smartDelay(50);
-    moveLeg(leftServos, 2, 90, 90, 85);
-    smartDelay(50);
-    moveLeg(rightServos, 3, 45, 90, 95);
-    smartDelay(200);
+    moveLeg(rightServos, 1, -20, 0, 0);
+    moveLeg(leftServos, 2, 20, 0, 0);
+    moveLeg(rightServos, 3, -20, 0, 0);
+    smartDelay(500);
   }
 }
 
@@ -295,19 +290,23 @@ void moveBackward() {
   while (backward) {
 
 
-    moveLeg(rightServos, 1, 90, 30, 95);
+    moveLegToPosition(rightServos, 1, 90, 30, 95);
     smartDelay(100);
     if (!backward) {
       resetPosition();
       return;
     }
-    moveLeg(rightServos, 3, 90, 30, 95);
+    moveLegToPosition(rightServos, 3, 90, 30, 95);
     smartDelay(100);
   }
 }
 
 void moveLeft() {
   Serial.println("Left");
+  smoothLifting(leftServos, 2, 30);
+  smartDelay(1000);
+  smoothLifting(leftServos, 2, -30);
+  smartDelay(1000);
 }
 
 void moveRight() {
@@ -323,28 +322,59 @@ void turnRobotRight() {
 }
 
 void resetPosition() {
-  moveLeg(leftServos, 1, 45, 90, 85);
-  moveLeg(rightServos, 2, 90, 90, 95);
-  moveLeg(leftServos, 3, 135, 90, 85);
+  moveLegToPosition(leftServos, 1, 60, 90, 85);
+  moveLegToPosition(rightServos, 2, 90, 90, 95);
+  moveLegToPosition(leftServos, 3, 120, 90, 85);
 
-  moveLeg(rightServos, 1, 135, 90, 95);
-  moveLeg(leftServos, 2, 90, 90, 85);
-  moveLeg(rightServos, 3, 45, 90, 95);
+  moveLegToPosition(rightServos, 1, 120, 90, 95);
+  moveLegToPosition(leftServos, 2, 90, 90, 85);
+  moveLegToPosition(rightServos, 3, 60, 90, 95);
 }
 
+void smoothLifting(Adafruit_PWMServoDriver& servos, int leg, int degrees) {
+  if (degrees > 0) {
+    for (int i = 1; i <= degrees; i++) {
+      moveLeg(servos, leg, 0, 1, 1);
+    }
+  } else {
+    for (int i = -1; i >= degrees; i--) {
+      moveLeg(servos, leg, 0, -1, -1);
+    }
+  }
+}
 
 void moveLeg(Adafruit_PWMServoDriver& servos, int leg, int coxaDegrees, int femurDegrees, int tibiaDegrees) {
+  if (&servos == &leftServos) {
+    coxaDegrees += currentDegrees[leg - 1][0];
+    femurDegrees += currentDegrees[leg - 1][1];
+    tibiaDegrees += currentDegrees[leg - 1][2];
+  } else {
+    coxaDegrees += currentDegrees[leg + 2][0];
+    femurDegrees += currentDegrees[leg + 2][1];
+    tibiaDegrees += currentDegrees[leg + 2][2];
+  }
+
+  moveLegToPosition(servos, leg, coxaDegrees, femurDegrees, tibiaDegrees);
+}
+
+void moveLegToPosition(Adafruit_PWMServoDriver& servos, int leg, int coxaDegrees, int femurDegrees, int tibiaDegrees) {
   int coxa = 0 + (4 * (leg - 1));
   int femur = 1 + (4 * (leg - 1));
   int tibia = 2 + (4 * (leg - 1));
 
   if (&servos == &leftServos) {
+    currentDegrees[leg - 1][0] = coxaDegrees;
     coxaDegrees += offset[leg - 1][0];
+    currentDegrees[leg - 1][1] = femurDegrees;
     femurDegrees += offset[leg - 1][1];
+    currentDegrees[leg - 1][2] = tibiaDegrees;
     tibiaDegrees += offset[leg - 1][2];
   } else {
+    currentDegrees[leg + 2][0] = coxaDegrees;
     coxaDegrees += offset[leg + 2][0];
+    currentDegrees[leg + 2][1] = femurDegrees;
     femurDegrees += offset[leg + 2][1];
+    currentDegrees[leg + 2][2] = tibiaDegrees;
     tibiaDegrees += offset[leg + 2][2];
   }
 
@@ -353,11 +383,8 @@ void moveLeg(Adafruit_PWMServoDriver& servos, int leg, int coxaDegrees, int femu
   else legHeight = height;
 
   servos.setPWM(coxa, 0, angleToPulse(coxaDegrees));
-  smartDelay(10);
   servos.setPWM(femur, 0, angleToPulse(femurDegrees + legHeight));
-  smartDelay(10);
   servos.setPWM(tibia, 0, angleToPulse(tibiaDegrees + legHeight));
-  smartDelay(10);
 }
 
 void smartDelay(int delayParam) {
