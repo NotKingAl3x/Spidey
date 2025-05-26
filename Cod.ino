@@ -413,11 +413,239 @@ void moveRight() {
 }
 
 void turnRobotLeft() {
+  bool groupALifted = false;
   Serial.println("TurnLeft");
+
+  while (turnLeft) {
+    if (!groupALifted) {
+      //Lift Group A
+      smoothLifting(leftServos, 1, 35);
+      smoothLifting(rightServos, 2, -35);
+      smoothLifting(leftServos, 3, 35);
+      smartDelay(300);
+
+      //Check If The Button Is Still Pressed
+      if (!turnLeft) {
+        resetPosition();
+        return;
+      }
+    }
+
+    //Rotate Group A To The Left
+    moveLeg(leftServos, 1, 20, 0, 0);
+    moveLeg(rightServos, 2, 20, 0, 0);
+    moveLeg(leftServos, 3, 20, 0, 0);
+    smartDelay(300);
+
+    //Check If The Button Is Still Pressed
+    if (!turnLeft) {
+      resetPosition();
+      return;
+    }
+
+    //Put Down Group A
+    smoothLifting(leftServos, 1, -35);
+    smoothLifting(rightServos, 2, 35);
+    smoothLifting(leftServos, 3, -35);
+    smartDelay(300);
+    groupALifted = false;
+
+    //Check If The Button Is Still Pressed
+    if (!turnLeft) {
+      resetPosition();
+      return;
+    }
+
+    //Lift Group B
+    smoothLifting(rightServos, 1, -35);
+    smoothLifting(leftServos, 2, 35);
+    smoothLifting(rightServos, 3, -35);
+    smartDelay(300);
+
+    //Check If The Button Is Still Pressed
+    if (!turnLeft) {
+      resetPosition();
+      return;
+    }
+
+    //Rotate Back Group A (Rotating the robot to the left)
+    moveLeg(leftServos, 1, -20, 0, 0);
+    moveLeg(rightServos, 2, -20, 0, 0);
+    moveLeg(leftServos, 3, -20, 0, 0);
+    smartDelay(300);
+
+    //Check If The Button Is Still Pressed
+    if (!turnLeft) {
+      resetPosition();
+      return;
+    }
+
+    //Rotate Group B To The Left
+    moveLeg(rightServos, 1, 20, 0, 0);
+    moveLeg(leftServos, 2, 20, 0, 0);
+    moveLeg(rightServos, 3, 20, 0, 0);
+    smartDelay(300);
+
+    //Check If The Button Is Still Pressed
+    if (!turnLeft) {
+      resetPosition();
+      return;
+    }
+
+    //Put Down Group B
+    smoothLifting(rightServos, 1, 35);
+    smoothLifting(leftServos, 2, -35);
+    smoothLifting(rightServos, 3, 35);
+    smartDelay(300);
+
+    //Check If The Button Is Still Pressed
+    if (!turnLeft) {
+      resetPosition();
+      return;
+    }
+
+    //Lift Group A
+    smoothLifting(leftServos, 1, 35);
+    smoothLifting(rightServos, 2, -35);
+    smoothLifting(leftServos, 3, 35);
+    groupALifted = true;
+    smartDelay(300);
+
+    //Check If The Button Is Still Pressed
+    if (!turnLeft) {
+      resetPosition();
+      return;
+    }
+
+    //Rotate Group B Back(Rotating the robot to the left)
+    moveLeg(rightServos, 1, -20, 0, 0);
+    moveLeg(leftServos, 2, -20, 0, 0);
+    moveLeg(rightServos, 3, -20, 0, 0);
+
+    //Check If The Button Is Still Pressed
+    if (!turnLeft) {
+      resetPosition();
+      return;
+    }
+  }
 }
 
 void turnRobotRight() {
+  bool groupALifted = false;
   Serial.println("TurnRight");
+
+  while (turnRight) {
+    if (!groupALifted) {
+      //Lift Group A
+      smoothLifting(leftServos, 1, 35);
+      smoothLifting(rightServos, 2, -35);
+      smoothLifting(leftServos, 3, 35);
+      smartDelay(300);
+
+      //Check If The Button Is Still Pressed
+      if (!turnRight) {
+        resetPosition();
+        return;
+      }
+    }
+
+    //Rotate Group A To The Right
+    moveLeg(leftServos, 1, -20, 0, 0);
+    moveLeg(rightServos, 2, -20, 0, 0);
+    moveLeg(leftServos, 3, -20, 0, 0);
+    smartDelay(300);
+
+    //Check If The Button Is Still Pressed
+    if (!turnRight) {
+      resetPosition();
+      return;
+    }
+
+    //Put Down Group A
+    smoothLifting(leftServos, 1, -35);
+    smoothLifting(rightServos, 2, 35);
+    smoothLifting(leftServos, 3, -35);
+    smartDelay(300);
+    groupALifted = false;
+
+    //Check If The Button Is Still Pressed
+    if (!turnRight) {
+      resetPosition();
+      return;
+    }
+
+    //Lift Group B
+    smoothLifting(rightServos, 1, -35);
+    smoothLifting(leftServos, 2, 35);
+    smoothLifting(rightServos, 3, -35);
+    smartDelay(300);
+
+    //Check If The Button Is Still Pressed
+    if (!turnRight) {
+      resetPosition();
+      return;
+    }
+
+    //Rotate Back Group A (Rotating the robot to the right)
+    moveLeg(leftServos, 1, 20, 0, 0);
+    moveLeg(rightServos, 2, 20, 0, 0);
+    moveLeg(leftServos, 3, 20, 0, 0);
+    smartDelay(300);
+
+    //Check If The Button Is Still Pressed
+    if (!turnRight) {
+      resetPosition();
+      return;
+    }
+
+    //Rotate Group B To The Right
+    moveLeg(rightServos, 1, -20, 0, 0);
+    moveLeg(leftServos, 2, -20, 0, 0);
+    moveLeg(rightServos, 3, -20, 0, 0);
+    smartDelay(300);
+
+    //Check If The Button Is Still Pressed
+    if (!turnRight) {
+      resetPosition();
+      return;
+    }
+
+    //Put Down Group B
+    smoothLifting(rightServos, 1, 35);
+    smoothLifting(leftServos, 2, -35);
+    smoothLifting(rightServos, 3, 35);
+    smartDelay(300);
+
+    //Check If The Button Is Still Pressed
+    if (!turnRight) {
+      resetPosition();
+      return;
+    }
+
+    //Lift Group A
+    smoothLifting(leftServos, 1, 35);
+    smoothLifting(rightServos, 2, -35);
+    smoothLifting(leftServos, 3, 35);
+    groupALifted = true;
+    smartDelay(300);
+
+    //Check If The Button Is Still Pressed
+    if (!turnRight) {
+      resetPosition();
+      return;
+    }
+
+    //Rotate Group B Back (Rotating the robot to the Right)
+    moveLeg(rightServos, 1, 20, 0, 0);
+    moveLeg(leftServos, 2, 20, 0, 0);
+    moveLeg(rightServos, 3, 20, 0, 0);
+
+    //Check If The Button Is Still Pressed
+    if (!turnRight) {
+      resetPosition();
+      return;
+    }
+  }
 }
 
 void resetPosition() {
