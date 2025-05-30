@@ -49,11 +49,11 @@ void readDht() {
   float h = dht.readHumidity();
   float t = dht.readTemperature();
 
-  Blynk.virtualWrite(V0, t);
+  Blynk.virtualWrite(V0, (t - 4));
   Blynk.virtualWrite(V1, h);
 
   Serial.print("Temperature : ");
-  Serial.print(t);
+  Serial.print(t - 4);
   Serial.print("    Humidity : ");
   Serial.println(h);
 }
@@ -172,29 +172,14 @@ void checkForMovement() {
 void moveForward() {
   Serial.println("Forward");
 
-  bool groupALifted = false;
-
   while (forward) {
 
-    if (!groupALifted) {
-      //Lift Group A
-      smoothLifting(leftServos, 1, 35);
-      smoothLifting(rightServos, 2, -35);
-      smoothLifting(leftServos, 3, 35);
-      smartDelay(300);
-    }
-
-    //Check If The Button Is Still Pressed
-    if (!forward) {
-      preResetPosition();
-      return;
-    }
-
-    //Move Group A Forward
+    //Put Leg L1 In Position
+    smoothLifting(leftServos, 1, 35);
     moveLeg(leftServos, 1, -20, 0, 0);
-    moveLeg(rightServos, 2, 20, 0, 0);
-    moveLeg(leftServos, 3, -20, 0, 0);
-    smartDelay(300);
+    smartDelay(50);
+    smoothLifting(leftServos, 1, -35);
+    smartDelay(80);
 
     //Check If The Button Is Still Pressed
     if (!forward) {
@@ -202,11 +187,25 @@ void moveForward() {
       return;
     }
 
-    //Put Down Group A
-    smoothLifting(leftServos, 1, -35);
+    //Put Leg R2 In Position
+    smoothLifting(rightServos, 2, -35);
+    moveLeg(rightServos, 2, 20, 0, 0);
+    smartDelay(50);
     smoothLifting(rightServos, 2, 35);
+    smartDelay(80);
+
+    //Check If The Button Is Still Pressed
+    if (!forward) {
+      preResetPosition();
+      return;
+    }
+
+    //Put Leg L3 In Position
+    smoothLifting(leftServos, 3, 35);
+    moveLeg(leftServos, 3, -20, 0, 0);
+    smartDelay(50);
     smoothLifting(leftServos, 3, -35);
-    smartDelay(300);
+    smartDelay(80);
 
     //Check If The Button Is Still Pressed
     if (!forward) {
@@ -218,7 +217,7 @@ void moveForward() {
     smoothLifting(rightServos, 1, -35);
     smoothLifting(leftServos, 2, 35);
     smoothLifting(rightServos, 3, -35);
-    smartDelay(500);
+    smartDelay(200);
 
     //Check If The Button Is Still Pressed
     if (!forward) {
@@ -230,18 +229,6 @@ void moveForward() {
     moveLeg(leftServos, 1, 20, 0, 0);
     moveLeg(rightServos, 2, -20, 0, 0);
     moveLeg(leftServos, 3, 20, 0, 0);
-    smartDelay(500);
-
-    //Check If The Button Is Still Pressed
-    if (!forward) {
-      preResetPosition();
-      return;
-    }
-
-    //Move Group B Forward
-    moveLeg(rightServos, 1, 20, 0, 0);
-    moveLeg(leftServos, 2, -20, 0, 0);
-    moveLeg(rightServos, 3, 20, 0, 0);
     smartDelay(300);
 
     //Check If The Button Is Still Pressed
@@ -254,7 +241,46 @@ void moveForward() {
     smoothLifting(rightServos, 1, 35);
     smoothLifting(leftServos, 2, -35);
     smoothLifting(rightServos, 3, 35);
-    smartDelay(300);
+    smartDelay(200);
+
+    //Check If The Button Is Still Pressed
+    if (!forward) {
+      preResetPosition();
+      return;
+    }
+
+    //Put Leg R1 In Position
+    smoothLifting(rightServos, 1, -35);
+    moveLeg(rightServos, 1, 20, 0, 0);
+    smartDelay(50);
+    smoothLifting(rightServos, 1, 35);
+    smartDelay(80);
+
+    //Check If The Button Is Still Pressed
+    if (!forward) {
+      preResetPosition();
+      return;
+    }
+
+    //Put Leg L2 In Position
+    smoothLifting(leftServos, 2, 35);
+    moveLeg(leftServos, 2, -20, 0, 0);
+    smartDelay(50);
+    smoothLifting(leftServos, 2, -35);
+    smartDelay(80);
+
+    //Check If The Button Is Still Pressed
+    if (!forward) {
+      preResetPosition();
+      return;
+    }
+
+    //Put Leg R3 In Position
+    smoothLifting(rightServos, 3, -35);
+    moveLeg(rightServos, 3, 20, 0, 0);
+    smartDelay(50);
+    smoothLifting(rightServos, 3, 35);
+    smartDelay(80);
 
     //Check If The Button Is Still Pressed
     if (!forward) {
@@ -266,9 +292,7 @@ void moveForward() {
     smoothLifting(leftServos, 1, 35);
     smoothLifting(rightServos, 2, -35);
     smoothLifting(leftServos, 3, 35);
-    smartDelay(500);
-    groupALifted = true;
-
+    smartDelay(300);
 
     //Check If The Button Is Still Pressed
     if (!forward) {
@@ -280,7 +304,25 @@ void moveForward() {
     moveLeg(rightServos, 1, -20, 0, 0);
     moveLeg(leftServos, 2, 20, 0, 0);
     moveLeg(rightServos, 3, -20, 0, 0);
-    smartDelay(500);
+    smartDelay(300);
+
+    //Check If The Button Is Still Pressed
+    if (!forward) {
+      preResetPosition();
+      return;
+    }
+
+    //Put Down Group A
+    smoothLifting(leftServos, 1, -35);
+    smoothLifting(rightServos, 2, 35);
+    smoothLifting(leftServos, 3, -35);
+    smartDelay(300);
+
+    //Check If The Button Is Still Pressed
+    if (!forward) {
+      preResetPosition();
+      return;
+    }
   }
 }
 
@@ -288,17 +330,14 @@ void moveForward() {
 void moveBackward() {
   Serial.println("Backward");
 
-  bool groupALifted = false;
-
   while (backward) {
 
-    if (!groupALifted) {
-      //Lift Group A
-      smoothLifting(leftServos, 1, 35);
-      smoothLifting(rightServos, 2, -35);
-      smoothLifting(leftServos, 3, 35);
-      smartDelay(300);
-    }
+    //Put Leg L1 In Position
+    smoothLifting(leftServos, 1, 35);
+    moveLeg(leftServos, 1, 20, 0, 0);
+    smartDelay(50);
+    smoothLifting(leftServos, 1, -35);
+    smartDelay(80);
 
     //Check If The Button Is Still Pressed
     if (!backward) {
@@ -306,10 +345,123 @@ void moveBackward() {
       return;
     }
 
-    //Move Group A Backward
-    moveLeg(leftServos, 1, 20, 0, 0);
+    //Put Leg R2 In Position
+    smoothLifting(rightServos, 2, -35);
     moveLeg(rightServos, 2, -20, 0, 0);
+    smartDelay(50);
+    smoothLifting(rightServos, 2, 35);
+    smartDelay(80);
+
+    //Check If The Button Is Still Pressed
+    if (!backward) {
+      preResetPosition();
+      return;
+    }
+
+    //Put Leg L3 In Position
+    smoothLifting(leftServos, 3, 35);
     moveLeg(leftServos, 3, 20, 0, 0);
+    smartDelay(50);
+    smoothLifting(leftServos, 3, -35);
+    smartDelay(80);
+
+    //Check If The Button Is Still Pressed
+    if (!backward) {
+      preResetPosition();
+      return;
+    }
+
+    //Lift Group B
+    smoothLifting(rightServos, 1, -35);
+    smoothLifting(leftServos, 2, 35);
+    smoothLifting(rightServos, 3, -35);
+    smartDelay(200);
+
+    //Check If The Button Is Still Pressed
+    if (!backward) {
+      preResetPosition();
+      return;
+    }
+
+    //Move Group A forwards(Moving the robot backward)
+    moveLeg(leftServos, 1, -20, 0, 0);
+    moveLeg(rightServos, 2, 20, 0, 0);
+    moveLeg(leftServos, 3, -20, 0, 0);
+    smartDelay(300);
+
+    //Check If The Button Is Still Pressed
+    if (!backward) {
+      preResetPosition();
+      return;
+    }
+
+    //Put Down Group B
+    smoothLifting(rightServos, 1, 35);
+    smoothLifting(leftServos, 2, -35);
+    smoothLifting(rightServos, 3, 35);
+    smartDelay(200);
+
+    //Check If The Button Is Still Pressed
+    if (!backward) {
+      preResetPosition();
+      return;
+    }
+
+    //Put Leg R1 In Position
+    smoothLifting(rightServos, 1, -35);
+    moveLeg(rightServos, 1, -20, 0, 0);
+    smartDelay(50);
+    smoothLifting(rightServos, 1, 35);
+    smartDelay(80);
+
+    //Check If The Button Is Still Pressed
+    if (!backward) {
+      preResetPosition();
+      return;
+    }
+
+    //Put Leg L2 In Position
+    smoothLifting(leftServos, 2, 35);
+    moveLeg(leftServos, 2, 20, 0, 0);
+    smartDelay(50);
+    smoothLifting(leftServos, 2, -35);
+    smartDelay(80);
+
+    //Check If The Button Is Still Pressed
+    if (!backward) {
+      preResetPosition();
+      return;
+    }
+
+    //Put Leg R3 In Position
+    smoothLifting(rightServos, 3, -35);
+    moveLeg(rightServos, 3, -20, 0, 0);
+    smartDelay(50);
+    smoothLifting(rightServos, 3, 35);
+    smartDelay(80);
+
+    //Check If The Button Is Still Pressed
+    if (!backward) {
+      preResetPosition();
+      return;
+    }
+
+    //Lift Group A
+    smoothLifting(leftServos, 1, 35);
+    smoothLifting(rightServos, 2, -35);
+    smoothLifting(leftServos, 3, 35);
+    smartDelay(300);
+
+    //Check If The Button Is Still Pressed
+    if (!backward) {
+      preResetPosition();
+      return;
+    }
+
+    //Move Group B Forward(Moving the robot backward)
+    moveLeg(rightServos, 1, 20, 0, 0);
+    moveLeg(leftServos, 2, -20, 0, 0);
+    moveLeg(rightServos, 3, 20, 0, 0);
     smartDelay(300);
 
     //Check If The Button Is Still Pressed
@@ -329,74 +481,6 @@ void moveBackward() {
       preResetPosition();
       return;
     }
-
-    //Lift Group B
-    smoothLifting(rightServos, 1, -35);
-    smoothLifting(leftServos, 2, 35);
-    smoothLifting(rightServos, 3, -35);
-    smartDelay(500);
-
-    //Check If The Button Is Still Pressed
-    if (!backward) {
-      preResetPosition();
-      return;
-    }
-
-    //Move Group A Forward(Moving the robot Backward)
-    moveLeg(leftServos, 1, -20, 0, 0);
-    moveLeg(rightServos, 2, 20, 0, 0);
-    moveLeg(leftServos, 3, -20, 0, 0);
-    smartDelay(500);
-
-    //Check If The Button Is Still Pressed
-    if (!backward) {
-      preResetPosition();
-      return;
-    }
-
-    //Move Group B Backward
-    moveLeg(rightServos, 1, -20, 0, 0);
-    moveLeg(leftServos, 2, 20, 0, 0);
-    moveLeg(rightServos, 3, -20, 0, 0);
-    smartDelay(300);
-
-    //Check If The Button Is Still Pressed
-    if (!backward) {
-      preResetPosition();
-      return;
-    }
-
-    //Put Down Group B
-    smoothLifting(rightServos, 1, 35);
-    smoothLifting(leftServos, 2, -35);
-    smoothLifting(rightServos, 3, 35);
-    smartDelay(300);
-
-    //Check If The Button Is Still Pressed
-    if (!backward) {
-      preResetPosition();
-      return;
-    }
-
-    //Lift Group A
-    smoothLifting(leftServos, 1, 35);
-    smoothLifting(rightServos, 2, -35);
-    smoothLifting(leftServos, 3, 35);
-    smartDelay(500);
-    groupALifted = true;
-
-
-    //Check If The Button Is Still Pressed
-    if (!backward) {
-      preResetPosition();
-      return;
-    }
-
-    //Move Group B Forward(Moving the robot Backward)
-    moveLeg(rightServos, 1, 20, 0, 0);
-    moveLeg(leftServos, 2, -20, 0, 0);
-    moveLeg(rightServos, 3, 20, 0, 0);
-    smartDelay(500);
   }
 }
 
@@ -435,7 +519,7 @@ void moveLeft() {
   //Put Leg R3 In Position
   smoothLifting(rightServos, 3, -35);
   smartDelay(100);
-  moveLeg(rightServos, 3, 60, 0, 0);
+  moveLeg(rightServos, 3, 30, 0, 0);
   smartDelay(100);
   smoothLifting(rightServos, 3, 35);
   smartDelay(100);
@@ -450,7 +534,7 @@ void moveLeft() {
   //Put Leg L3 In Position
   smoothLifting(leftServos, 3, 35);
   smartDelay(100);
-  moveLeg(leftServos, 3, -50, 0, 0);
+  moveLeg(leftServos, 3, -20, 0, 0);
   smartDelay(100);
   smoothLifting(leftServos, 3, -35);
   smartDelay(100);
@@ -539,10 +623,10 @@ void moveLeft() {
       return;
     }
 
-    //Put Leg L3 Back In Position
+    //Put Leg L3 In Position
     smoothLifting(leftServos, 3, 35);
     smartDelay(100);
-    moveLeg(leftServos, 3, 20, 0, 0);
+    moveLeg(leftServos, 3, -20, 0, 0);
     smartDelay(100);
     smoothLifting(leftServos, 3, -35);
     smartDelay(100);
@@ -590,7 +674,7 @@ void moveRight() {
   //Put Leg R3 In Position
   smoothLifting(rightServos, 3, -35);
   smartDelay(100);
-  moveLeg(rightServos, 3, 60, 0, 0);
+  moveLeg(rightServos, 3, 30, 0, 0);
   smartDelay(100);
   smoothLifting(rightServos, 3, 35);
   smartDelay(100);
@@ -605,7 +689,7 @@ void moveRight() {
   //Put Leg L3 In Position
   smoothLifting(leftServos, 3, 35);
   smartDelay(100);
-  moveLeg(leftServos, 3, -50, 0, 0);
+  moveLeg(leftServos, 3, -20, 0, 0);
   smartDelay(100);
   smoothLifting(leftServos, 3, -35);
   smartDelay(100);
@@ -951,36 +1035,48 @@ void preResetPosition() {
   //Put Leg R1 To Home Position
   smoothLifting(rightServos, 1, -35);
   smartDelay(50);
+  moveLeg(rightServos, 1, 110-currentDegrees[3][0], 0, 0);
+  smartDelay(100);
   moveLegToPosition(rightServos, 1, 110, 90, 95);
   smartDelay(50);
 
   //Put Leg L1 To Home Position
   smoothLifting(leftServos, 1, 35);
   smartDelay(50);
+  moveLeg(leftServos, 1, 70-currentDegrees[0][0], 0, 0);
+  smartDelay(100);
   moveLegToPosition(leftServos, 1, 70, 90, 85);
   smartDelay(50);
 
   //Put Leg R2 To Home Position
   smoothLifting(rightServos, 2, -35);
   smartDelay(50);
+  moveLeg(rightServos, 2, 90-currentDegrees[4][0], 0, 0);
+  smartDelay(100);
   moveLegToPosition(rightServos, 2, 90, 90, 95);
   smartDelay(50);
 
   //Put Leg L2 To Home Position
   smoothLifting(leftServos, 2, 35);
   smartDelay(50);
+  moveLeg(leftServos, 1, 90-currentDegrees[1][0], 0, 0);
+  smartDelay(100);
   moveLegToPosition(leftServos, 2, 90, 90, 85);
   smartDelay(50);
 
   //Put Leg R3 To Home Position
   smoothLifting(rightServos, 3, -35);
   smartDelay(50);
+  moveLeg(rightServos, 1, 70-currentDegrees[5][0], 0, 0);
+  smartDelay(100);
   moveLegToPosition(rightServos, 3, 70, 90, 95);
   smartDelay(50);
 
   //Put Leg L3 To Home Position
   smoothLifting(leftServos, 3, 35);
   smartDelay(50);
+  moveLeg(leftServos, 1, 110-currentDegrees[2][0], 0, 0);
+  smartDelay(100);
   moveLegToPosition(leftServos, 3, 110, 90, 85);
   smartDelay(50);
 
